@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus Static Container | Pure Frontend</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="glass-container">
+        <div class="header">
+            <div class="badge">STATIC DEPLOYMENT</div>
+            <h1>Zero-Dependency Architecture</h1>
+            <p>This stunning frontend is running directly on an Nginx web server inside your Docker container. No Node.js, no Python, just pure speed.</p>
+        </div>
+        
+        <div class="metrics-grid">
+            <div class="metric-card">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                <h3>Cost</h3>
+                <div class="value">$0.00</div>
+                <div class="label">Per Million Requests</div>
+            </div>
+            <div class="metric-card">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+                <h3>Latency</h3>
+                <div class="value" id="latency-display">~12ms</div>
+                <div class="label">Global Edge Cache</div>
+            </div>
+        </div>
+        
+        <div class="terminal">
+            <div class="terminal-header">
+                <div class="dot red"></div>
+                <div class="dot yellow"></div>
+                <div class="dot green"></div>
+            </div>
+            <div class="terminal-body" id="console-output">
+                > Connecting to deployment runtime...
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/app.js"></script>
+</body>
+</html>

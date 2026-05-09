@@ -1,0 +1,607 @@
+<!-- ========================= -->
+<!-- AUTH WRAPPER START -->
+<!-- ========================= -->
+
+<div id="authWrapper">
+
+    <!-- Login / Signup Container -->
+    <div class="auth-container" id="authContainer">
+
+        <!-- Login Form -->
+        <div class="auth-box" id="loginBox">
+            <h2><i class="fas fa-lock"></i> Login to NexusCode</h2>
+
+            <div class="input-group">
+                <label>Email</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+
+            <p class="auth-switch">
+                Don't have an account?
+                <span id="showSignup">Create Account</span>
+            </p>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="auth-box" id="signupBox" style="display:none;">
+            <h2><i class="fas fa-user-plus"></i> Create NexusCode Account</h2>
+
+            <div class="input-group">
+                <label>Full Name</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="signupName" placeholder="Enter your full name">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="signupEmail" placeholder="Enter your email">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="signupPassword" placeholder="Create password">
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" id="signupBtn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+
+            <p class="auth-switch">
+                Already have an account?
+                <span id="showLogin">Login</span>
+            </p>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- ORIGINAL APP START -->
+    <!-- ========================= -->
+
+    <div id="mainApp" style="display:none;">
+
+       <!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NexusCode | Futuristic Code Environment Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+
+<body>
+    <!-- Deployment Modal -->
+    <div class="deployment-modal" id="deploymentModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>🚀 Environment Deployed Successfully!</h3>
+                <button class="modal-close" id="modalClose">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>Your development environment has been successfully deployed and is now running live!</p>
+
+
+                <div class="environment-info">
+                    <p><strong>Environment Name:</strong> <span id="modalEnvName">nexus-project-1234</span></p>
+                    <p><strong>Status:</strong> <span style="color: var(--success);">● Running</span></p>
+                    <p><strong>Deployment Time:</strong> <span id="modalDeployTime">2 minutes ago</span></p>
+                </div>
+
+
+                <p>Access your environment at:</p>
+                <a href="#" class="modal-environment-link" id="modalEnvLink" target="_blank">
+                    <i class="fas fa-external-link-alt"></i>
+                    <span id="modalLinkText">https://nexus-project-1234.cloud.nexuscode.com</span>
+                </a>
+
+
+                <p><small>Your environment will remain active for 24 hours. You can extend this time from the
+                        dashboard.</small></p>
+
+
+                <div style="display: flex; gap: 10px; margin-top: 20px;">
+                    <button class="btn btn-primary" id="openEnvBtn" style="flex: 1;">
+                        <i class="fas fa-external-link-alt"></i> Open Environment
+                    </button>
+                    <button class="btn" id="copyLinkBtn" style="flex: 1;">
+                        <i class="fas fa-copy"></i> Copy Link
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Environment Viewer (Hidden by default) -->
+    <div class="environment-viewer" id="environmentViewer">
+        <div class="env-header">
+            <div class="env-title" id="envViewerTitle">
+                <i class="fas fa-code"></i> NexusCode Environment
+            </div>
+            <div class="env-controls">
+                <button class="btn" id="refreshEnvBtn">
+                    <i class="fas fa-redo"></i> Refresh
+                </button>
+                <button class="btn btn-primary" id="stopEnvBtn">
+                    <i class="fas fa-stop"></i> Stop Environment
+                </button>
+                <button class="btn" id="deleteEnvBtn" style="color: var(--danger); border-color: var(--danger);">
+                    <i class="fas fa-trash"></i> Delete
+                </button>
+                <button class="btn" id="closeEnvBtn">
+                    <i class="fas fa-times"></i> Close
+                </button>
+            </div>
+        </div>
+        <div class="env-content">
+            <div class="env-terminal" id="envTerminal">
+                <div class="terminal-line"><span class="prompt">$</span> Starting NexusCode Environment...</div>
+                <div class="terminal-line"><span class="prompt">$</span> Loading environment configuration...</div>
+                <div class="terminal-line"><span class="prompt">$</span> Initializing Docker containers...</div>
+                <div class="terminal-line"><span class="prompt">$</span> Starting database services...</div>
+                <div class="terminal-line"><span class="prompt">$</span> Launching development server...</div>
+                <div class="terminal-line"><span class="prompt">$</span> Environment ready on port 3000</div>
+                <div class="terminal-line"><span class="prompt">$</span> Web server accessible at: <span
+                        id="envUrlDisplay"></span></div>
+                <div class="terminal-line"><span class="prompt">$</span> Type 'help' for available commands</div>
+            </div>
+
+
+            <div class="env-file-explorer">
+                <h3>Project Files</h3>
+                <ul class="env-file-list" id="envFileList">
+                    <li class="env-file-item">📁 src/</li>
+                    <li class="env-file-item">📁 public/</li>
+                    <li class="env-file-item">📄 package.json</li>
+                    <li class="env-file-item">📄 Dockerfile</li>
+                    <li class="env-file-item">📄 README.md</li>
+                </ul>
+            </div>
+
+
+            <div class="env-file-explorer">
+                <h3>Environment Controls</h3>
+                <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+                    <button class="btn" id="runServerBtn">
+                        <i class="fas fa-play"></i> Run Server
+                    </button>
+                    <button class="btn" id="openEditorBtn">
+                        <i class="fas fa-edit"></i> Open Editor
+                    </button>
+                    <button class="btn" id="viewLogsBtn">
+                        <i class="fas fa-file-alt"></i> View Logs
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Dashboard Viewer (Hidden by default) -->
+    <div class="environment-viewer" id="dashboardViewer"
+        style="display: none; background: var(--bg-card); border-radius: 12px; margin: 2rem; padding: 2rem; border: 1px solid var(--border);">
+        <div class="env-header">
+            <div class="env-title">
+                <i class="fas fa-list-alt"></i> Active Environments
+            </div>
+            <div class="env-controls">
+                <button class="btn" id="closeDashboardBtn">
+                    <i class="fas fa-times"></i> Close Dashboard
+                </button>
+            </div>
+        </div>
+        <div class="env-content" style="display: block; padding: 1rem 0;">
+            <table style="width: 100%; border-collapse: collapse; text-align: left;">
+                <thead>
+                    <tr style="border-bottom: 1px solid var(--border);">
+                        <th style="padding: 1rem;">Name</th>
+                        <th style="padding: 1rem;">Status</th>
+                        <th style="padding: 1rem;">Created</th>
+                        <th style="padding: 1rem;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="dashboardTableBody">
+                    <!-- Dashboard items will be injected here -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+
+    <!-- Main App Container -->
+    <div id="appContainer">
+        <!-- Header -->
+        <header>
+            <div class="logo">
+                <div class="logo-icon">
+                    <i class="fas fa-code"></i>
+                </div>
+                <div class="logo-text">Nexus<span>Code</span></div>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="#" class="active">Environment Builder</a></li>
+                    <li><a href="#" id="dashboardLink">Dashboard</a></li>
+                    <li><a href="#" onclick="alert('Templates feature arriving in v2.0!')">Templates</a></li>
+                    <li><a href="#" onclick="alert('Documentation is being written.')">Documentation</a></li>
+                    <li><a href="#" onclick="alert('Community forum launching soon!')">Community</a></li>
+                </ul>
+            </nav>
+        </header>
+
+
+        <!-- Main Content -->
+        <main class="main-container">
+            <!-- Page Title -->
+            <div class="page-title">
+                <h1>Futuristic Code Environment Builder</h1>
+                <p>Create, customize, and deploy development environments in seconds. Upload code, fetch from GitHub, or
+                    generate with AI.</p>
+            </div>
+
+
+            <!-- Input Sections -->
+            <div class="input-sections">
+                <!-- File Upload Section -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-folder-plus"></i>
+                        </div>
+                        <div class="card-title">Upload Code Files & Folders</div>
+                    </div>
+                    <div class="file-upload-area" id="uploadArea">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <p>Drag & drop your files and folders here</p>
+                        <p>or <span>browse</span> to upload</p>
+                        <input type="file" id="fileInput" multiple webkitdirectory directory>
+                    </div>
+                    <div class="selected-files" id="selectedFiles">
+                        <!-- Files will be listed here -->
+                    </div>
+                    <div class="input-group">
+                        <label for="environmentType">Environment Type</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-server"></i>
+                            <select id="environmentType">
+                                <option value="node">Node.js Development</option>
+                                <option value="python">Python Data Science</option>
+                                <option value="react">React Frontend</option>
+                                <option value="fullstack">Full Stack (MERN)</option>
+                                <option value="docker">Docker Container</option>
+                                <option value="custom">Custom Configuration</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-block" id="uploadBtn">
+                        <i class="fas fa-upload"></i> Build Environment from Files
+                    </button>
+                </div>
+
+
+                <!-- GitHub Import Section -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fab fa-github"></i>
+                        </div>
+                        <div class="card-title">Fetch Code from GitHub</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="githubUrl">GitHub Repository URL</label>
+                        <div class="input-with-icon">
+                            <i class="fab fa-github"></i>
+                            <input type="text" id="githubUrl" placeholder="https://github.com/username/repository">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="branch">Branch (optional)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-code-branch"></i>
+                            <input type="text" id="branch" placeholder="main">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="accessToken">Access Token (optional)</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-key"></i>
+                            <input type="password" id="accessToken" placeholder="For private repositories">
+                        </div>
+                    </div>
+                    <button class="btn btn-primary btn-block" id="githubBtn">
+                        <i class="fas fa-download"></i> Import from GitHub
+                    </button>
+                </div>
+
+
+                <!-- AI/ML Input Section -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-icon">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div class="card-title">AI/ML Code Generation</div>
+                    </div>
+                    <div class="input-group">
+                        <label for="aiDescription">Describe Your Project</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-pen"></i>
+                            <textarea id="aiDescription"
+                                placeholder="Example: Create a Python Flask API with MongoDB connection, JWT authentication, and CRUD operations for a todo app..."></textarea>
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="aiFramework">Preferred Framework/Language</label>
+                        <div class="input-with-icon">
+                            <i class="fas fa-cog"></i>
+                            <select id="aiFramework">
+                                <option value="python">Python</option>
+                                <option value="javascript">JavaScript/Node.js</option>
+                                <option value="react">React</option>
+                                <option value="vue">Vue.js</option>
+                                <option value="flutter">Flutter</option>
+                                <option value="tensorflow">TensorFlow/PyTorch</option>
+                            </select>
+                        </div>
+                    </div>
+                    <button class="btn btn-block" id="aiBtn">
+                        <i class="fas fa-magic"></i> Generate Code with AI
+                    </button>
+                </div>
+
+
+                <!-- ML Model Upload Section -->
+                <div class="section-card">
+                    <div class="card-header">
+                        <div class="card-icon" style="background: rgba(139, 92, 246, 0.2); color: #8b5cf6;">
+                            <i class="fas fa-brain"></i>
+                        </div>
+                        <div class="card-title">Deploy Built AI/ML Model</div>
+                    </div>
+                    <div class="input-group">
+                        <label>Upload Model File (.pkl, .h5, .onnx, .joblib)</label>
+                        <div class="file-upload-area" id="mlUploadArea" style="min-height: 100px; padding: 1.5rem;">
+                            <div class="upload-icon" style="font-size: 2rem; margin-bottom: 0.5rem;">
+                                <i class="fas fa-file-upload"></i>
+                            </div>
+                            <p style="font-size: 0.9rem;">Click to upload model</p>
+                            <input type="file" id="mlFileInput" accept=".pkl,.h5,.onnx,.pt,.joblib">
+                        </div>
+                        <div class="selected-files" id="mlSelectedFiles"></div>
+                    </div>
+                    <button class="btn btn-block" id="mlBtn"
+                        style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%);">
+                        <i class="fas fa-server"></i> Generate API & Deploy Model
+                    </button>
+                </div>
+            </div>
+
+
+            <!-- Output Section -->
+            <div class="output-section">
+                <div class="output-header">
+                    <h2>Environment Output</h2>
+                    <div class="status-indicator">
+                        <div class="status-dot" id="statusDot"></div>
+                        <span id="statusText">Ready to build environment</span>
+                    </div>
+                </div>
+                <div class="output-content" id="outputContent">
+                    // Environment output will appear here
+
+
+                    Your generated development environment configuration, setup scripts, and deployment instructions
+                    will be displayed in this area.
+
+
+                    Select an input method above and click the corresponding button to begin.
+                </div>
+                <div style="display: flex; gap: 1rem; margin-top: 1.5rem;">
+                    <button class="btn" id="downloadBtn">
+                        <i class="fas fa-download"></i> Download Configuration
+                    </button>
+                    <button class="btn btn-primary" id="deployBtn">
+                        <i class="fas fa-rocket"></i> Deploy Environment
+                    </button>
+                    <button class="btn" id="clearBtn">
+                        <i class="fas fa-trash"></i> Clear Output
+                    </button>
+                </div>
+
+
+                <!-- Environment Link Container (will be populated after deployment) -->
+                <div id="environmentLinkContainer" style="margin-top: 20px; display: none;">
+                    <div class="environment-info">
+                        <p><strong>Live Environment Available:</strong></p>
+                        <a href="#" class="environment-link" id="environmentLink" target="_blank">
+                            <i class="fas fa-external-link-alt"></i>
+                            <span id="linkText">https://nexus-project-1234.cloud.nexuscode.com</span>
+                        </a>
+                        <p style="margin-top: 10px; font-size: 0.9rem; color: var(--gray);">
+                            <i class="fas fa-info-circle"></i> Your environment is now running and accessible at the
+                            link above. It will remain active for 24 hours.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+
+        <!-- Footer -->
+        <footer>
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>NexusCode</h3>
+                    <p>Build futuristic development environments with ease. Streamline your workflow with AI-powered
+                        code generation and deployment.</p>
+                    <div class="social-icons">
+                        <a href="#"><i class="fab fa-github"></i></a>
+                        <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-discord"></i></a>
+                        <a href="#"><i class="fab fa-linkedin"></i></a>
+                    </div>
+                </div>
+                <div class="footer-column">
+                    <h3>Features</h3>
+                    <ul>
+                        <li><a href="#">Environment Builder</a></li>
+                        <li><a href="#">GitHub Integration</a></li>
+                        <li><a href="#">AI Code Generation</a></li>
+                        <li><a href="#">Team Collaboration</a></li>
+                        <li><a href="#">Cloud Deployment</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Resources</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Tutorials</a></li>
+                        <li><a href="#">API Reference</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Support</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Cookie Policy</a></li>
+                        <li><a href="#">Security</a></li>
+                        <li><a href="#">Compliance</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2023 NexusCode. All rights reserved. | Futuristic Development Environment Platform</p>
+            </div>
+        </footer>
+    </div>
+
+
+    <script src="script.js"></script>
+</body>
+
+
+</html>
+        
+    </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- AUTH WRAPPER END -->
+<!-- ========================= -->
+
+<style>
+.auth-container{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#0f172a;
+    padding:20px;
+}
+
+.auth-box{
+    width:100%;
+    max-width:420px;
+    background:#111827;
+    border:1px solid #1f2937;
+    border-radius:16px;
+    padding:35px;
+    box-shadow:0 0 30px rgba(0,0,0,0.4);
+}
+
+.auth-box h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:white;
+}
+
+.auth-switch{
+    text-align:center;
+    margin-top:20px;
+    color:#9ca3af;
+}
+
+.auth-switch span{
+    color:#60a5fa;
+    cursor:pointer;
+    font-weight:600;
+}
+</style>
+
+<script>
+const loginBox = document.getElementById("loginBox");
+const signupBox = document.getElementById("signupBox");
+
+document.getElementById("showSignup").onclick = () => {
+    loginBox.style.display = "none";
+    signupBox.style.display = "block";
+};
+
+document.getElementById("showLogin").onclick = () => {
+    signupBox.style.display = "none";
+    loginBox.style.display = "block";
+};
+
+function openMainApp() {
+    document.getElementById("authContainer").style.display = "none";
+    document.getElementById("mainApp").style.display = "block";
+}
+
+document.getElementById("loginBtn").onclick = () => {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if(email && password){
+        openMainApp();
+    } else {
+        alert("Please enter email and password");
+    }
+};
+
+document.getElementById("signupBtn").onclick = () => {
+    const name = document.getElementById("signupName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+
+    if(name && email && password){
+        alert("Account created successfully!");
+        signupBox.style.display = "none";
+        loginBox.style.display = "block";
+    } else {
+        alert("Please fill all fields");
+    }
+};
+</script>
