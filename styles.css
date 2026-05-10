@@ -109,6 +109,43 @@ nav a.active::after {
     border-radius: 2px;
 }
 
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.btn-small {
+    padding: 0.65rem 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}
+
+.auth-entry {
+    background: rgba(0, 243, 255, 0.08);
+    border: 1px solid var(--border);
+}
+
+.signed-in-menu {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.signed-in-menu[hidden] {
+    display: none;
+}
+
+.signed-in-menu span {
+    color: var(--primary);
+    font-weight: 600;
+    max-width: 180px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 /* Main Container */
 .main-container {
     max-width: 1400px;
@@ -338,6 +375,186 @@ textarea {
 
 .btn-block {
     width: 100%;
+}
+
+.page-view {
+    display: none;
+}
+
+.page-view.active {
+    display: block;
+}
+
+.auth-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.78);
+    backdrop-filter: blur(8px);
+}
+
+.auth-modal.open {
+    display: flex;
+}
+
+.auth-card {
+    width: min(460px, 100%);
+    background-color: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 2rem;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+    position: relative;
+}
+
+.auth-close {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+}
+
+.auth-subtitle,
+.auth-helper,
+.template-card p,
+.community-posts p {
+    color: var(--gray);
+    line-height: 1.6;
+}
+
+.auth-subtitle {
+    margin-top: 0.4rem;
+    font-size: 0.95rem;
+}
+
+.auth-tabs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.5rem;
+    background: rgba(10, 10, 26, 0.6);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.35rem;
+    margin-bottom: 1.5rem;
+}
+
+.auth-tab {
+    border: none;
+    background: transparent;
+    color: var(--gray);
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.auth-tab.active {
+    color: var(--dark);
+    background: var(--primary);
+}
+
+.auth-form {
+    display: none;
+}
+
+.auth-form.active {
+    display: block;
+}
+
+.auth-helper {
+    margin-top: 1rem;
+    text-align: center;
+    font-size: 0.9rem;
+}
+
+.template-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+}
+
+.template-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.template-card .btn {
+    margin-top: auto;
+}
+
+.feature-list,
+.docs-steps {
+    color: var(--gray);
+    line-height: 1.8;
+    margin-left: 1.2rem;
+}
+
+.docs-layout,
+.community-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 2rem;
+}
+
+.api-list {
+    display: grid;
+    gap: 0.8rem;
+}
+
+.api-list div {
+    display: grid;
+    grid-template-columns: 76px 1fr;
+    gap: 0.35rem 1rem;
+    align-items: center;
+    background: rgba(10, 10, 26, 0.55);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 0.9rem;
+}
+
+.api-list code {
+    color: var(--dark);
+    background: var(--primary);
+    border-radius: 6px;
+    padding: 0.35rem 0.55rem;
+    text-align: center;
+    font-weight: 800;
+}
+
+.api-list span {
+    color: var(--light);
+    font-family: monospace;
+    word-break: break-word;
+}
+
+.api-list small {
+    grid-column: 2;
+    color: var(--gray);
+}
+
+.community-layout {
+    grid-template-columns: minmax(0, 1.2fr) minmax(320px, 0.8fr);
+}
+
+.community-posts {
+    display: grid;
+    gap: 1rem;
+}
+
+.community-posts article {
+    background: rgba(10, 10, 26, 0.55);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 1rem;
+}
+
+.community-posts strong {
+    color: var(--primary);
+    display: block;
+    margin-bottom: 0.5rem;
 }
 
 /* Output Section */
@@ -680,6 +897,12 @@ footer {
         flex-wrap: wrap;
         justify-content: center;
     }
+
+    .header-actions {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
 }
 
 @media (max-width: 768px) {
@@ -699,6 +922,19 @@ footer {
         flex-direction: column;
         align-items: flex-start;
         gap: 1rem;
+    }
+
+    .community-layout,
+    .docs-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .api-list div {
+        grid-template-columns: 1fr;
+    }
+
+    .api-list small {
+        grid-column: 1;
     }
 }
 

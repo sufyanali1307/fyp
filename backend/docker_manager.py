@@ -40,14 +40,14 @@ class DockerManager:
         try:
             if docker_host:
                 self.client = docker.DockerClient(base_url=docker_host, timeout=900)
-                print(f"✅ Connected to remote Docker host: {docker_host}")
+                print(f"[OK] Connected to remote Docker host: {docker_host}")
             else:
                 self.client = docker.from_env(timeout=900)
-                print("✅ Connected to local Docker daemon")
+                print("[OK] Connected to local Docker daemon")
             # Quick connectivity check
             self.client.ping()
         except Exception as e:
-            print(f"⚠️  Docker connection failed: {e}")
+            print(f"[WARN] Docker connection failed: {e}")
             print("   The API will still start, but deploy actions will fail")
             print("   until Docker becomes reachable.")
             self.client = None
@@ -155,13 +155,13 @@ CMD ["echo", "Custom environments require a manual Dockerfile"]
 
 
             # Build image
-            print(f"Building Docker image {image_name} …")
+            print(f"Building Docker image {image_name} ...")
             try:
                 image, build_logs = self.client.images.build(
                     path=project_dir, tag=image_name, rm=True, nocache=True
                 )
             except docker.errors.BuildError as e:
-                print(f"❌ Docker Build Failed: {e}")
+                print(f"[ERROR] Docker Build Failed: {e}")
                 log_output = []
                 for chunk in e.build_log:
                     if 'stream' in chunk:
@@ -177,7 +177,7 @@ CMD ["echo", "Custom environments require a manual Dockerfile"]
                     backup_path = os.path.join(project_dir, 'Dockerfile.failed')
                     import shutil
                     if os.path.exists(dockerfile_path) and not os.path.exists(backup_path):
-                        print("♻️  Attempting self-healing fallback build...")
+                        print("Attempting self-healing fallback build...")
                         error_msg = f"Build failed, attempting self-healing recovery... Original error: {full_log[-200:]}"
                         print(error_msg)
                         shutil.move(dockerfile_path, backup_path)
@@ -187,7 +187,7 @@ CMD ["echo", "Custom environments require a manual Dockerfile"]
                             image, build_logs = self.client.images.build(
                                 path=project_dir, tag=image_name, rm=True, nocache=True
                             )
-                            print("✅ Self-healing build successful!")
+                            print("[OK] Self-healing build successful!")
                             # Do NOT return here. Let the script flow down to "Detect EXPOSE port" and "Run Container"
                         except docker.errors.BuildError as fallback_e:
                             shutil.move(backup_path, dockerfile_path) # Revert
@@ -217,7 +217,7 @@ CMD ["echo", "Custom environments require a manual Dockerfile"]
 
 
             # Run container with automatic port mapping if port_mapping is 0
-            print(f"Running container {safe_container_name} mapping :{port_mapping if port_mapping != 0 else 'auto'} → :{exposed_port} …")
+            print(f"Running container {safe_container_name} mapping :{port_mapping if port_mapping != 0 else 'auto'} -> :{exposed_port} ...")
            
             run_kwargs = {
                 'image': image_name,

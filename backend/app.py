@@ -396,7 +396,7 @@ def get_environment(env_id):
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=8000)
+    app.run(debug=True, port=int(os.environ.get('FLASK_PORT', 8000)), use_reloader=False)
 
 
 

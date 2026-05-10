@@ -1,89 +1,4 @@
-<!-- ========================= -->
-<!-- AUTH WRAPPER START -->
-<!-- ========================= -->
-
-<div id="authWrapper">
-
-    <!-- Login / Signup Container -->
-    <div class="auth-container" id="authContainer">
-
-        <!-- Login Form -->
-        <div class="auth-box" id="loginBox">
-            <h2><i class="fas fa-lock"></i> Login to NexusCode</h2>
-
-            <div class="input-group">
-                <label>Email</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="loginEmail" placeholder="Enter your email">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-key"></i>
-                    <input type="password" id="loginPassword" placeholder="Enter your password">
-                </div>
-            </div>
-
-            <button class="btn btn-primary btn-block" id="loginBtn">
-                <i class="fas fa-sign-in-alt"></i> Login
-            </button>
-
-            <p class="auth-switch">
-                Don't have an account?
-                <span id="showSignup">Create Account</span>
-            </p>
-        </div>
-
-        <!-- Signup Form -->
-        <div class="auth-box" id="signupBox" style="display:none;">
-            <h2><i class="fas fa-user-plus"></i> Create NexusCode Account</h2>
-
-            <div class="input-group">
-                <label>Full Name</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-user"></i>
-                    <input type="text" id="signupName" placeholder="Enter your full name">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Email</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-envelope"></i>
-                    <input type="email" id="signupEmail" placeholder="Enter your email">
-                </div>
-            </div>
-
-            <div class="input-group">
-                <label>Password</label>
-                <div class="input-with-icon">
-                    <i class="fas fa-lock"></i>
-                    <input type="password" id="signupPassword" placeholder="Create password">
-                </div>
-            </div>
-
-            <button class="btn btn-primary btn-block" id="signupBtn">
-                <i class="fas fa-user-plus"></i> Create Account
-            </button>
-
-            <p class="auth-switch">
-                Already have an account?
-                <span id="showLogin">Login</span>
-            </p>
-        </div>
-
-    </div>
-
-    <!-- ========================= -->
-    <!-- ORIGINAL APP START -->
-    <!-- ========================= -->
-
-    <div id="mainApp" style="display:none;">
-
-       <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 
 
@@ -235,6 +150,77 @@
     </div>
 
 
+    <!-- Optional Authentication Modal -->
+    <div class="auth-modal" id="authModal" aria-hidden="true">
+        <div class="auth-card" role="dialog" aria-modal="true" aria-labelledby="authTitle">
+            <button class="modal-close auth-close" id="authClose" aria-label="Close authentication dialog">&times;</button>
+            <div class="card-header">
+                <div class="card-icon">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div>
+                    <div class="card-title" id="authTitle">Sign In</div>
+                    <p class="auth-subtitle">Continue as a guest or save a local workspace profile.</p>
+                </div>
+            </div>
+
+            <div class="auth-tabs" role="tablist" aria-label="Account actions">
+                <button class="auth-tab active" type="button" data-auth-mode="signin">Sign In</button>
+                <button class="auth-tab" type="button" data-auth-mode="signup">Create Account</button>
+            </div>
+
+            <form class="auth-form active" id="signinForm">
+                <div class="input-group">
+                    <label for="signinEmail">Email</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="text" id="signinEmail" placeholder="you@example.com" autocomplete="email" inputmode="email">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="signinPassword">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="current-password">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" type="submit">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+            </form>
+
+            <form class="auth-form" id="signupForm">
+                <div class="input-group">
+                    <label for="signupName">Full Name</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-user"></i>
+                        <input type="text" id="signupName" placeholder="Your name" autocomplete="name">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="signupEmail">Email</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-envelope"></i>
+                        <input type="text" id="signupEmail" placeholder="you@example.com" autocomplete="email" inputmode="email">
+                    </div>
+                </div>
+                <div class="input-group">
+                    <label for="signupPassword">Password</label>
+                    <div class="input-with-icon">
+                        <i class="fas fa-lock"></i>
+                        <input type="password" id="signupPassword" placeholder="Minimum 6 characters" autocomplete="new-password">
+                    </div>
+                </div>
+                <button class="btn btn-primary btn-block" type="submit">
+                    <i class="fas fa-user-plus"></i> Create Account
+                </button>
+            </form>
+
+            <p class="auth-helper" id="authMessage">No account is required to use the builder.</p>
+        </div>
+    </div>
+
+
     <!-- Main App Container -->
     <div id="appContainer">
         <!-- Header -->
@@ -247,18 +233,30 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="#" class="active">Environment Builder</a></li>
+                    <li><a href="#builder" class="active" data-page-link="builder">Environment Builder</a></li>
                     <li><a href="#" id="dashboardLink">Dashboard</a></li>
-                    <li><a href="#" onclick="alert('Templates feature arriving in v2.0!')">Templates</a></li>
-                    <li><a href="#" onclick="alert('Documentation is being written.')">Documentation</a></li>
-                    <li><a href="#" onclick="alert('Community forum launching soon!')">Community</a></li>
+                    <li><a href="#templates" data-page-link="templates">Templates</a></li>
+                    <li><a href="#documentation" data-page-link="documentation">Documentation</a></li>
+                    <li><a href="#community" data-page-link="community">Community</a></li>
                 </ul>
             </nav>
+            <div class="header-actions">
+                <button class="btn btn-small auth-entry" id="signInOpenBtn">
+                    <i class="fas fa-sign-in-alt"></i> Sign In
+                </button>
+                <div class="signed-in-menu" id="signedInMenu" hidden>
+                    <span id="signedInName"></span>
+                    <button class="btn btn-small" id="signOutBtn">
+                        <i class="fas fa-sign-out-alt"></i> Sign Out
+                    </button>
+                </div>
+            </div>
         </header>
 
 
         <!-- Main Content -->
         <main class="main-container">
+            <section class="page-view active" id="builderPage" data-page="builder">
             <!-- Page Title -->
             <div class="page-title">
                 <h1>Futuristic Code Environment Builder</h1>
@@ -453,6 +451,181 @@
                     </div>
                 </div>
             </div>
+            </section>
+
+            <section class="page-view" id="templatesPage" data-page="templates">
+                <div class="page-title">
+                    <h1>Templates</h1>
+                    <p>Start from production-minded blueprints for common app, API, and ML deployment workflows.</p>
+                </div>
+
+                <div class="input-sections template-grid">
+                    <div class="section-card template-card" data-template-type="react" data-template-title="React Frontend Starter">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fab fa-react"></i></div>
+                            <div class="card-title">React Frontend Starter</div>
+                        </div>
+                        <p>Single page app structure with a Docker-ready Node build flow.</p>
+                        <ul class="feature-list">
+                            <li>Vite-style client layout</li>
+                            <li>Static asset pipeline</li>
+                            <li>Nginx deployment target</li>
+                        </ul>
+                        <button class="btn btn-block use-template-btn" data-template="react">
+                            <i class="fas fa-bolt"></i> Use Template
+                        </button>
+                    </div>
+
+                    <div class="section-card template-card" data-template-type="node" data-template-title="Node.js API">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fab fa-node-js"></i></div>
+                            <div class="card-title">Node.js API</div>
+                        </div>
+                        <p>Express-style backend template for quick REST API deployment.</p>
+                        <ul class="feature-list">
+                            <li>Health-check endpoint</li>
+                            <li>Environment variable setup</li>
+                            <li>Container-friendly start command</li>
+                        </ul>
+                        <button class="btn btn-block use-template-btn" data-template="node">
+                            <i class="fas fa-bolt"></i> Use Template
+                        </button>
+                    </div>
+
+                    <div class="section-card template-card" data-template-type="python" data-template-title="Python Flask API">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fab fa-python"></i></div>
+                            <div class="card-title">Python Flask API</div>
+                        </div>
+                        <p>Compact Flask service template for APIs, demos, and student projects.</p>
+                        <ul class="feature-list">
+                            <li>Gunicorn-compatible app entry</li>
+                            <li>Requirements file baseline</li>
+                            <li>Simple route structure</li>
+                        </ul>
+                        <button class="btn btn-block use-template-btn" data-template="python">
+                            <i class="fas fa-bolt"></i> Use Template
+                        </button>
+                    </div>
+
+                    <div class="section-card template-card" data-template-type="ml" data-template-title="ML Model API">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-brain"></i></div>
+                            <div class="card-title">ML Model API</div>
+                        </div>
+                        <p>Model-serving pattern for pickle, joblib, ONNX, and common Python inference assets.</p>
+                        <ul class="feature-list">
+                            <li>/predict endpoint guidance</li>
+                            <li>Input schema checklist</li>
+                            <li>Model wrapper notes</li>
+                        </ul>
+                        <button class="btn btn-block use-template-btn" data-template="ml">
+                            <i class="fas fa-bolt"></i> Use Template
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-view" id="documentationPage" data-page="documentation">
+                <div class="page-title">
+                    <h1>Documentation</h1>
+                    <p>Reference the workflow from source upload to live container, with the same backend API that powers the dashboard.</p>
+                </div>
+
+                <div class="docs-layout">
+                    <div class="section-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-route"></i></div>
+                            <div class="card-title">Deployment Flow</div>
+                        </div>
+                        <ol class="docs-steps">
+                            <li>Choose files, a GitHub repository, generated code, or an ML model.</li>
+                            <li>NexusCode creates an environment record and prepares the project workspace.</li>
+                            <li>The deploy action builds and starts the Docker container through the backend.</li>
+                            <li>The dashboard monitors status, live URL, and logs for the running environment.</li>
+                        </ol>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-plug"></i></div>
+                            <div class="card-title">API Reference</div>
+                        </div>
+                        <div class="api-list">
+                            <div><code>GET</code><span>/api/environments</span><small>List environments</small></div>
+                            <div><code>POST</code><span>/api/environments</span><small>Create environment</small></div>
+                            <div><code>POST</code><span>/api/environments/{id}/deploy</span><small>Deploy container</small></div>
+                            <div><code>GET</code><span>/api/environments/{id}/logs</span><small>Read live logs</small></div>
+                            <div><code>DELETE</code><span>/api/environments/{id}</span><small>Delete environment</small></div>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-shield-alt"></i></div>
+                            <div class="card-title">Operational Notes</div>
+                        </div>
+                        <ul class="feature-list">
+                            <li>Public browsing remains open for visitors without an account.</li>
+                            <li>Frontend account state is local to this browser until backend auth is added.</li>
+                            <li>Running environments expire after the configured backend lifetime.</li>
+                            <li>Private GitHub repositories require backend token support before production use.</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <section class="page-view" id="communityPage" data-page="community">
+                <div class="page-title">
+                    <h1>Community</h1>
+                    <p>Share deployment questions, template ideas, and project notes with other NexusCode users.</p>
+                </div>
+
+                <div class="community-layout">
+                    <div class="section-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-comments"></i></div>
+                            <div class="card-title">Discussion Board</div>
+                        </div>
+                        <div class="community-posts" id="communityPosts">
+                            <article>
+                                <strong>Best starter for a Flask ML demo?</strong>
+                                <p>Use the ML Model API template, upload your model file, then deploy once the generated wrapper is ready.</p>
+                            </article>
+                            <article>
+                                <strong>Can guests build environments?</strong>
+                                <p>Yes. Accounts are optional on the frontend, so visitors can still explore the builder.</p>
+                            </article>
+                        </div>
+                    </div>
+
+                    <div class="section-card">
+                        <div class="card-header">
+                            <div class="card-icon"><i class="fas fa-pen-nib"></i></div>
+                            <div class="card-title">Start a Topic</div>
+                        </div>
+                        <form id="communityForm">
+                            <div class="input-group">
+                                <label for="communityTitle">Title</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-heading"></i>
+                                    <input type="text" id="communityTitle" placeholder="Deployment question or idea">
+                                </div>
+                            </div>
+                            <div class="input-group">
+                                <label for="communityBody">Message</label>
+                                <div class="input-with-icon">
+                                    <i class="fas fa-message"></i>
+                                    <textarea id="communityBody" placeholder="Share the details..."></textarea>
+                                </div>
+                            </div>
+                            <button class="btn btn-primary btn-block" type="submit">
+                                <i class="fas fa-paper-plane"></i> Post Topic
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </section>
         </main>
 
 
@@ -473,31 +646,31 @@
                 <div class="footer-column">
                     <h3>Features</h3>
                     <ul>
-                        <li><a href="#">Environment Builder</a></li>
-                        <li><a href="#">GitHub Integration</a></li>
-                        <li><a href="#">AI Code Generation</a></li>
-                        <li><a href="#">Team Collaboration</a></li>
-                        <li><a href="#">Cloud Deployment</a></li>
+                        <li><a href="#builder" data-page-link="builder">Environment Builder</a></li>
+                        <li><a href="#builder" data-page-link="builder">GitHub Integration</a></li>
+                        <li><a href="#builder" data-page-link="builder">AI Code Generation</a></li>
+                        <li><a href="#community" data-page-link="community">Team Collaboration</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">Cloud Deployment</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Resources</h3>
                     <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">Tutorials</a></li>
-                        <li><a href="#">API Reference</a></li>
-                        <li><a href="#">Blog</a></li>
-                        <li><a href="#">Support</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">Documentation</a></li>
+                        <li><a href="#templates" data-page-link="templates">Tutorials</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">API Reference</a></li>
+                        <li><a href="#community" data-page-link="community">Blog</a></li>
+                        <li><a href="#community" data-page-link="community">Support</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
                     <h3>Legal</h3>
                     <ul>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Cookie Policy</a></li>
-                        <li><a href="#">Security</a></li>
-                        <li><a href="#">Compliance</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">Privacy Policy</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">Terms of Service</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">Cookie Policy</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">Security</a></li>
+                        <li><a href="#documentation" data-page-link="documentation">Compliance</a></li>
                     </ul>
                 </div>
             </div>
@@ -513,95 +686,3 @@
 
 
 </html>
-        
-    </div>
-
-</div>
-
-<!-- ========================= -->
-<!-- AUTH WRAPPER END -->
-<!-- ========================= -->
-
-<style>
-.auth-container{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:#0f172a;
-    padding:20px;
-}
-
-.auth-box{
-    width:100%;
-    max-width:420px;
-    background:#111827;
-    border:1px solid #1f2937;
-    border-radius:16px;
-    padding:35px;
-    box-shadow:0 0 30px rgba(0,0,0,0.4);
-}
-
-.auth-box h2{
-    text-align:center;
-    margin-bottom:25px;
-    color:white;
-}
-
-.auth-switch{
-    text-align:center;
-    margin-top:20px;
-    color:#9ca3af;
-}
-
-.auth-switch span{
-    color:#60a5fa;
-    cursor:pointer;
-    font-weight:600;
-}
-</style>
-
-<script>
-const loginBox = document.getElementById("loginBox");
-const signupBox = document.getElementById("signupBox");
-
-document.getElementById("showSignup").onclick = () => {
-    loginBox.style.display = "none";
-    signupBox.style.display = "block";
-};
-
-document.getElementById("showLogin").onclick = () => {
-    signupBox.style.display = "none";
-    loginBox.style.display = "block";
-};
-
-function openMainApp() {
-    document.getElementById("authContainer").style.display = "none";
-    document.getElementById("mainApp").style.display = "block";
-}
-
-document.getElementById("loginBtn").onclick = () => {
-    const email = document.getElementById("loginEmail").value;
-    const password = document.getElementById("loginPassword").value;
-
-    if(email && password){
-        openMainApp();
-    } else {
-        alert("Please enter email and password");
-    }
-};
-
-document.getElementById("signupBtn").onclick = () => {
-    const name = document.getElementById("signupName").value;
-    const email = document.getElementById("signupEmail").value;
-    const password = document.getElementById("signupPassword").value;
-
-    if(name && email && password){
-        alert("Account created successfully!");
-        signupBox.style.display = "none";
-        loginBox.style.display = "block";
-    } else {
-        alert("Please fill all fields");
-    }
-};
-</script>

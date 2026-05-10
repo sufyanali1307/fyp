@@ -2,27 +2,53 @@
 class NexusBackend {
     constructor() {
         const isLocalHost = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' || window.location.protocol === 'file:';
-        const host = isLocalHost ? '127.0.0.1' : window.location.hostname;
-        this.apiBase = `http://${host}:8000/api`;
+        this.host = isLocalHost ? '127.0.0.1' : window.location.hostname;
+        this.ports = [8000, 5000];
+        this.apiBase = `http://${this.host}:${this.ports[0]}/api`;
     }
 
 
     async _fetch(endpoint, options = {}) {
-        try {
-            const url = `${this.apiBase}${endpoint}`;
-            const response = await fetch(url, options);
-            const data = await response.json();
-            if (!response.ok) {
-                throw new Error(data.error || `HTTP error ${response.status}`);
+        const triedBases = new Set();
+        let lastError = null;
+
+        for (const port of this.ports) {
+            const base = `http://${this.host}:${port}/api`;
+            if (triedBases.has(base)) continue;
+            triedBases.add(base);
+
+            try {
+                const url = `${base}${endpoint}`;
+                const response = await fetch(url, options);
+                const data = await response.json();
+                if (!response.ok) {
+                    throw new Error(data.error || `HTTP error ${response.status}`);
+                }
+                this.apiBase = base;
+                return data;
+            } catch (error) {
+                console.error(`API Error on ${endpoint} at ${base}:`, error);
+                lastError = error;
+                const isNetworkFailure = error instanceof TypeError && /failed to fetch|networkerror|network error/i.test(error.message);
+                if (!isNetworkFailure) {
+                    return {
+                        success: false,
+                        error: error.message
+                    };
+                }
             }
-            return data;
-        } catch (error) {
-            console.error(`API Error on ${endpoint}:`, error);
-            return {
-                success: false,
-                error: error.message
-            };
         }
+
+        const portsTried = Array.from(triedBases).map((base) => base.replace(`http://${this.host}:`, '').replace('/api', '')).join(', ');
+        return {
+            success: false,
+            error: `Backend API is not reachable at ${this.apiBase}. Tried ports ${portsTried}. Start the Flask backend on port 8000 or 5000.`
+        };
+    }
+
+    async checkAvailability() {
+        const result = await this._fetch('/environments', { method: 'GET' });
+        return result.success;
     }
 
 
@@ -45,6 +71,7 @@ class NexusBackend {
             }
         } else if (config.source === 'ai') {
             formData.append('description', config.description);
+            if (config.framework) formData.append('framework', config.framework);
         }
 
 
@@ -126,6 +153,21 @@ const mlUploadArea = document.getElementById('mlUploadArea');
 const mlFileInput = document.getElementById('mlFileInput');
 const mlSelectedFiles = document.getElementById('mlSelectedFiles');
 const mlBtn = document.getElementById('mlBtn');
+const pageViews = document.querySelectorAll('.page-view');
+const pageLinks = document.querySelectorAll('[data-page-link]');
+const signInOpenBtn = document.getElementById('signInOpenBtn');
+const signOutBtn = document.getElementById('signOutBtn');
+const signedInMenu = document.getElementById('signedInMenu');
+const signedInName = document.getElementById('signedInName');
+const authModal = document.getElementById('authModal');
+const authClose = document.getElementById('authClose');
+const authTabs = document.querySelectorAll('[data-auth-mode]');
+const signinForm = document.getElementById('signinForm');
+const signupForm = document.getElementById('signupForm');
+const authMessage = document.getElementById('authMessage');
+const useTemplateButtons = document.querySelectorAll('.use-template-btn');
+const communityForm = document.getElementById('communityForm');
+const communityPosts = document.getElementById('communityPosts');
 
 
 // Initialize backend
@@ -134,6 +176,243 @@ const backend = new NexusBackend();
 
 // Current environment data
 let currentEnvironment = null;
+
+const AUTH_USERS_KEY = 'nexuscode_users';
+const AUTH_CURRENT_KEY = 'nexuscode_current_user';
+const COMMUNITY_POSTS_KEY = 'nexuscode_community_posts';
+
+function readJson(key, fallback) {
+    try {
+        return JSON.parse(localStorage.getItem(key)) || fallback;
+    } catch (error) {
+        console.warn(`Unable to read ${key} from local storage`, error);
+        return fallback;
+    }
+}
+
+function writeJson(key, value) {
+    localStorage.setItem(key, JSON.stringify(value));
+}
+
+function showPage(pageName, updateHash = true) {
+    const page = pageName || 'builder';
+    pageViews.forEach((view) => {
+        view.classList.toggle('active', view.dataset.page === page);
+    });
+
+    pageLinks.forEach((link) => {
+        link.classList.toggle('active', link.dataset.pageLink === page);
+    });
+
+    if (dashboardLink) {
+        dashboardLink.classList.remove('active');
+    }
+
+    if (dashboardViewer) {
+        dashboardViewer.style.display = 'none';
+    }
+
+    appContainer.style.display = 'block';
+
+    if (updateHash) {
+        history.pushState(null, '', `#${page}`);
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setAuthMode(mode) {
+    const isSignup = mode === 'signup';
+    authTabs.forEach((tab) => {
+        tab.classList.toggle('active', tab.dataset.authMode === mode);
+    });
+    signinForm.classList.toggle('active', !isSignup);
+    signupForm.classList.toggle('active', isSignup);
+    document.getElementById('authTitle').textContent = isSignup ? 'Create Account' : 'Sign In';
+    authMessage.textContent = isSignup
+        ? 'Your account is stored locally in this browser for the current frontend.'
+        : 'No account is required to use the builder.';
+}
+
+function openAuthModal(mode = 'signin') {
+    setAuthMode(mode);
+    authModal.classList.add('open');
+    authModal.setAttribute('aria-hidden', 'false');
+}
+
+function closeAuthModal() {
+    authModal.classList.remove('open');
+    authModal.setAttribute('aria-hidden', 'true');
+    authMessage.textContent = 'No account is required to use the builder.';
+}
+
+function refreshAuthUI() {
+    const user = readJson(AUTH_CURRENT_KEY, null);
+    if (user) {
+        signInOpenBtn.style.display = 'none';
+        signedInMenu.hidden = false;
+        signedInName.textContent = user.name || user.email;
+    } else {
+        signInOpenBtn.style.display = 'inline-flex';
+        signedInMenu.hidden = true;
+        signedInName.textContent = '';
+    }
+}
+
+function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
+function renderCommunityPosts() {
+    const savedPosts = readJson(COMMUNITY_POSTS_KEY, []);
+    savedPosts.forEach((post) => prependCommunityPost(post));
+}
+
+function prependCommunityPost(post) {
+    if (!communityPosts) return;
+    const article = document.createElement('article');
+    const title = document.createElement('strong');
+    const body = document.createElement('p');
+    title.textContent = post.title;
+    body.textContent = post.body;
+    article.appendChild(title);
+    article.appendChild(body);
+    communityPosts.prepend(article);
+}
+
+function applyTemplate(templateName) {
+    const templates = {
+        react: {
+            framework: 'react',
+            environmentType: 'react',
+            description: 'Create a React frontend starter with reusable components, routing, API service helpers, and a Docker-ready production build.',
+            message: 'React template selected. Review the AI description, then generate or upload your own React files.'
+        },
+        node: {
+            framework: 'javascript',
+            environmentType: 'node',
+            description: 'Create a Node.js REST API with health checks, environment configuration, structured routes, and Docker deployment support.',
+            message: 'Node.js API template selected. Review the AI description, then generate the starter API.'
+        },
+        python: {
+            framework: 'python',
+            environmentType: 'python',
+            description: 'Create a Python Flask API with health checks, clean routes, requirements.txt, and a Docker-friendly entry point.',
+            message: 'Python Flask template selected. Review the AI description, then generate the starter API.'
+        },
+        ml: {
+            framework: 'python',
+            environmentType: 'python',
+            description: 'Create a Python model serving API with a /predict endpoint, request validation, and Docker deployment notes for an uploaded ML model.',
+            message: 'ML API template selected. Upload a model file or use AI generation for the wrapper shape.'
+        }
+    };
+
+    const template = templates[templateName];
+    if (!template) return;
+
+    document.getElementById('environmentType').value = template.environmentType;
+    document.getElementById('aiFramework').value = template.framework;
+    document.getElementById('aiDescription').value = template.description;
+    outputContent.textContent = template.message;
+    updateStatus('', 'Template ready');
+    showPage('builder');
+}
+
+pageLinks.forEach((link) => {
+    link.addEventListener('click', (event) => {
+        event.preventDefault();
+        showPage(link.dataset.pageLink);
+    });
+});
+
+useTemplateButtons.forEach((button) => {
+    button.addEventListener('click', () => {
+        applyTemplate(button.dataset.template);
+    });
+});
+
+authTabs.forEach((tab) => {
+    tab.addEventListener('click', () => setAuthMode(tab.dataset.authMode));
+});
+
+signInOpenBtn.addEventListener('click', () => openAuthModal('signin'));
+authClose.addEventListener('click', closeAuthModal);
+
+signOutBtn.addEventListener('click', () => {
+    localStorage.removeItem(AUTH_CURRENT_KEY);
+    refreshAuthUI();
+});
+
+signinForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const email = document.getElementById('signinEmail').value.trim().toLowerCase();
+    const password = document.getElementById('signinPassword').value;
+    const users = readJson(AUTH_USERS_KEY, []);
+    const user = users.find((item) => item.email === email && item.password === password);
+
+    if (!isValidEmail(email) || !password) {
+        authMessage.textContent = 'Enter a valid email and password.';
+        return;
+    }
+
+    if (!user) {
+        authMessage.textContent = 'No matching local account found. Create an account first.';
+        return;
+    }
+
+    writeJson(AUTH_CURRENT_KEY, { name: user.name, email: user.email });
+    closeAuthModal();
+    refreshAuthUI();
+});
+
+signupForm.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const name = document.getElementById('signupName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const password = document.getElementById('signupPassword').value;
+    const users = readJson(AUTH_USERS_KEY, []);
+
+    if (!name || !isValidEmail(email) || password.length < 6) {
+        authMessage.textContent = 'Use your name, a valid email, and a password of at least 6 characters.';
+        return;
+    }
+
+    if (users.some((user) => user.email === email)) {
+        authMessage.textContent = 'An account with this email already exists locally.';
+        return;
+    }
+
+    const newUser = { name, email, password };
+    users.push(newUser);
+    writeJson(AUTH_USERS_KEY, users);
+    writeJson(AUTH_CURRENT_KEY, { name, email });
+    closeAuthModal();
+    refreshAuthUI();
+    signupForm.reset();
+});
+
+if (communityForm) {
+    communityForm.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const titleInput = document.getElementById('communityTitle');
+        const bodyInput = document.getElementById('communityBody');
+        const title = titleInput.value.trim();
+        const body = bodyInput.value.trim();
+
+        if (!title || !body) {
+            alert('Please enter both a title and a message.');
+            return;
+        }
+
+        const posts = readJson(COMMUNITY_POSTS_KEY, []);
+        const post = { title, body, createdAt: new Date().toISOString() };
+        posts.unshift(post);
+        writeJson(COMMUNITY_POSTS_KEY, posts.slice(0, 20));
+        prependCommunityPost(post);
+        communityForm.reset();
+    });
+}
 
 
 // File upload handling
@@ -308,7 +587,8 @@ async function buildEnvironment(source, data) {
                     source === 'ml' ? document.getElementById('mlFileInput').files : null,
                 url: source === 'github' ? document.getElementById('githubUrl').value : null,
                 branch: source === 'github' ? document.getElementById('branch').value : null,
-                description: source === 'ai' ? document.getElementById('aiDescription').value : null
+                description: source === 'ai' ? document.getElementById('aiDescription').value : null,
+                framework: source === 'ai' ? document.getElementById('aiFramework').value : null
             });
 
 
@@ -335,7 +615,10 @@ async function buildEnvironment(source, data) {
         } catch (error) {
             console.error('Error creating environment:', error);
             updateStatus('error', 'Failed to create environment');
-            outputContent.textContent = `❌ Error: ${error.message}\n\nPlease check server logs or ensure Docker daemon is running.`;
+            const backendUnavailable = /Backend API is not reachable/i.test(error.message);
+            outputContent.textContent = backendUnavailable
+                ? `❌ Error: ${error.message}\n\nPlease start the Flask backend server by running backend/app.py on port 8000.`
+                : `❌ Error: ${error.message}\n\nPlease check server logs or ensure Docker daemon is running.`;
             downloadBtn.disabled = true;
             deployBtn.disabled = true;
         }
@@ -689,6 +972,8 @@ if (viewLogsBtn) {
 // Dashboard link
 dashboardLink.addEventListener('click', async (e) => {
     e.preventDefault();
+    pageLinks.forEach((link) => link.classList.remove('active'));
+    dashboardLink.classList.add('active');
     try {
         const result = await backend.listEnvironments();
         if (result.success) {
@@ -741,7 +1026,8 @@ dashboardLink.addEventListener('click', async (e) => {
 if (closeDashboardBtn) {
     closeDashboardBtn.addEventListener('click', () => {
         dashboardViewer.style.display = 'none';
-        appContainer.style.display = 'block';
+        const pageFromHash = window.location.hash.replace('#', '') || 'builder';
+        showPage(pageFromHash, false);
     });
 }
 
@@ -751,14 +1037,41 @@ window.addEventListener('click', (e) => {
     if (e.target === deploymentModal) {
         deploymentModal.style.display = 'none';
     }
+    if (e.target === authModal) {
+        closeAuthModal();
+    }
 });
 
 
 // Check for environment in URL parameters (for direct access)
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const envId = urlParams.get('env');
+    const requestedPage = window.location.hash.replace('#', '');
+    const knownPage = [...pageViews].some((view) => view.dataset.page === requestedPage);
 
+    refreshAuthUI();
+    renderCommunityPosts();
+    showPage(knownPage ? requestedPage : 'builder', false);
+
+    updateStatus('warning', 'Checking backend connection...');
+    const backendAvailable = await backend.checkAvailability();
+    if (backendAvailable) {
+        updateStatus('active', 'Ready to build environment');
+        uploadBtn.disabled = false;
+        githubBtn.disabled = false;
+        aiBtn.disabled = false;
+        mlBtn.disabled = false;
+    } else {
+        updateStatus('error', 'Backend API unavailable');
+        outputContent.textContent = `❌ Backend API is not reachable on ${backend.apiBase}.\n\nPlease start the Flask backend server by running backend/app.py and make sure the backend is listening on port 8000 or 5000.`;
+        uploadBtn.disabled = true;
+        githubBtn.disabled = true;
+        aiBtn.disabled = true;
+        mlBtn.disabled = true;
+        downloadBtn.disabled = true;
+        deployBtn.disabled = true;
+    }
 
     if (envId) {
         // Try to load environment from backend
@@ -771,9 +1084,14 @@ window.addEventListener('DOMContentLoaded', () => {
             .catch(console.error);
     }
 
-
     // Initialize with disabled buttons
     downloadBtn.disabled = true;
     deployBtn.disabled = true;
+});
+
+window.addEventListener('popstate', () => {
+    const requestedPage = window.location.hash.replace('#', '') || 'builder';
+    const knownPage = [...pageViews].some((view) => view.dataset.page === requestedPage);
+    showPage(knownPage ? requestedPage : 'builder', false);
 });
 

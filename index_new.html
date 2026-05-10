@@ -1,4 +1,89 @@
-<!DOCTYPE html>
+<!-- ========================= -->
+<!-- AUTH WRAPPER START -->
+<!-- ========================= -->
+
+<div id="authWrapper">
+
+    <!-- Login / Signup Container -->
+    <div class="auth-container" id="authContainer">
+
+        <!-- Login Form -->
+        <div class="auth-box" id="loginBox">
+            <h2><i class="fas fa-lock"></i> Login to NexusCode</h2>
+
+            <div class="input-group">
+                <label>Email</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="loginEmail" placeholder="Enter your email">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-key"></i>
+                    <input type="password" id="loginPassword" placeholder="Enter your password">
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" id="loginBtn">
+                <i class="fas fa-sign-in-alt"></i> Login
+            </button>
+
+            <p class="auth-switch">
+                Don't have an account?
+                <span id="showSignup">Create Account</span>
+            </p>
+        </div>
+
+        <!-- Signup Form -->
+        <div class="auth-box" id="signupBox" style="display:none;">
+            <h2><i class="fas fa-user-plus"></i> Create NexusCode Account</h2>
+
+            <div class="input-group">
+                <label>Full Name</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-user"></i>
+                    <input type="text" id="signupName" placeholder="Enter your full name">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Email</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-envelope"></i>
+                    <input type="email" id="signupEmail" placeholder="Enter your email">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label>Password</label>
+                <div class="input-with-icon">
+                    <i class="fas fa-lock"></i>
+                    <input type="password" id="signupPassword" placeholder="Create password">
+                </div>
+            </div>
+
+            <button class="btn btn-primary btn-block" id="signupBtn">
+                <i class="fas fa-user-plus"></i> Create Account
+            </button>
+
+            <p class="auth-switch">
+                Already have an account?
+                <span id="showLogin">Login</span>
+            </p>
+        </div>
+
+    </div>
+
+    <!-- ========================= -->
+    <!-- ORIGINAL APP START -->
+    <!-- ========================= -->
+
+    <div id="mainApp" style="display:none;">
+
+       <!DOCTYPE html>
 <html lang="en">
 
 
@@ -428,3 +513,95 @@
 
 
 </html>
+        
+    </div>
+
+</div>
+
+<!-- ========================= -->
+<!-- AUTH WRAPPER END -->
+<!-- ========================= -->
+
+<style>
+.auth-container{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#0f172a;
+    padding:20px;
+}
+
+.auth-box{
+    width:100%;
+    max-width:420px;
+    background:#111827;
+    border:1px solid #1f2937;
+    border-radius:16px;
+    padding:35px;
+    box-shadow:0 0 30px rgba(0,0,0,0.4);
+}
+
+.auth-box h2{
+    text-align:center;
+    margin-bottom:25px;
+    color:white;
+}
+
+.auth-switch{
+    text-align:center;
+    margin-top:20px;
+    color:#9ca3af;
+}
+
+.auth-switch span{
+    color:#60a5fa;
+    cursor:pointer;
+    font-weight:600;
+}
+</style>
+
+<script>
+const loginBox = document.getElementById("loginBox");
+const signupBox = document.getElementById("signupBox");
+
+document.getElementById("showSignup").onclick = () => {
+    loginBox.style.display = "none";
+    signupBox.style.display = "block";
+};
+
+document.getElementById("showLogin").onclick = () => {
+    signupBox.style.display = "none";
+    loginBox.style.display = "block";
+};
+
+function openMainApp() {
+    document.getElementById("authContainer").style.display = "none";
+    document.getElementById("mainApp").style.display = "block";
+}
+
+document.getElementById("loginBtn").onclick = () => {
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPassword").value;
+
+    if(email && password){
+        openMainApp();
+    } else {
+        alert("Please enter email and password");
+    }
+};
+
+document.getElementById("signupBtn").onclick = () => {
+    const name = document.getElementById("signupName").value;
+    const email = document.getElementById("signupEmail").value;
+    const password = document.getElementById("signupPassword").value;
+
+    if(name && email && password){
+        alert("Account created successfully!");
+        signupBox.style.display = "none";
+        loginBox.style.display = "block";
+    } else {
+        alert("Please fill all fields");
+    }
+};
+</script>
